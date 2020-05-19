@@ -243,6 +243,24 @@ func (c *Client) GetUser(userID string) (*GetUserResult, error) {
 	return result, nil
 }
 
+// DeleteUser calls DELETE /admin/v1/users/:user_id
+// See https://duo.com/docs/adminapi#delete-user
+func (c *Client) DeleteUser(userID string) (*duoapi.StatResult, error) {
+	path := fmt.Sprintf("/admin/v1/users/%s", userID)
+
+	_, body, err := c.SignedCall(http.MethodDelete, path, nil, duoapi.UseTimeout)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &duoapi.StatResult{}
+	err = json.Unmarshal(body, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // GetUserGroups calls GET /admin/v1/users/:user_id/groups
 // See https://duo.com/docs/adminapi#retrieve-groups-by-user-id
 func (c *Client) GetUserGroups(userID string, options ...func(*url.Values)) (*GetGroupsResult, error) {
