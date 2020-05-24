@@ -592,6 +592,78 @@ func (c *Client) GetPhone(phoneID string) (*GetPhoneResult, error) {
 	return result, nil
 }
 
+// ModifyPhoneExtension sets the optional extension parameter for a ModifyPhone request.
+func ModifyPhoneExtension(extension string) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("extension", extension)
+	}
+}
+
+// ModifyPhoneName sets the optional name parameter for a ModifyPhone request.
+func ModifyPhoneName(name string) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("name", name)
+	}
+}
+
+// ModifyPhoneNumber sets the optional number parameter for a ModifyPhone request.
+func ModifyPhoneNumber(number string) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("number", number)
+	}
+}
+
+// ModifyPhonePlatform sets the optional platform parameter for a ModifyPhone request.
+func ModifyPhonePlatform(platform string) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("platform", platform)
+	}
+}
+
+// ModifyPhonePostDelay sets the optional postdelay parameter for a ModifyPhone request.
+func ModifyPhonePostDelay(postdelay uint64) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("postdelay", strconv.FormatInt(int64(postdelay), 10))
+	}
+}
+
+// ModifyPhonePreDelay sets the optional predelay parameter for a ModifyPhone request.
+func ModifyPhonePreDelay(predelay uint64) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("predelay", strconv.FormatInt(int64(predelay), 10))
+	}
+}
+
+// ModifyPhoneType sets the optional type parameter for a ModifyPhone request.
+func ModifyPhoneType(phoneType string) func(*url.Values) {
+	return func(opts *url.Values) {
+		opts.Set("type", phoneType)
+	}
+}
+
+// ModifyPhone calls POST /admin/v1/phones/:phone_id
+// See https://duo.com/docs/adminapi#modify-phone
+func (c *Client) ModifyPhone(phoneID string, options ...func(*url.Values)) (*GetPhoneResult, error) {
+	path := fmt.Sprintf("/admin/v1/phones/%s", phoneID)
+
+	params := url.Values{}
+	for _, o := range options {
+		o(&params)
+	}
+
+	_, body, err := c.SignedCall(http.MethodPost, path, params, duoapi.UseTimeout)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &GetPhoneResult{}
+	err = json.Unmarshal(body, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // DeletePhone calls DELETE /admin/v1/phones/:phone_id
 // See https://duo.com/docs/adminapi#delete-phone
 func (c *Client) DeletePhone(phoneID string) (*duoapi.StatResult, error) {
